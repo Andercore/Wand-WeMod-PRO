@@ -43,6 +43,8 @@ WandEnhancer includes a built-in **Remote Web Panel** allowing you to control ap
 
 This repository does not publish official compiled binaries. Build your own executable from your own fork using GitHub Actions.
 
+The fork also includes an automatic upstream build: every 15 minutes it checks `k1tbyte/Wand-Enhancer`, builds a new upstream commit on Windows, and publishes `WandEnhancer.exe` in a GitHub Release. Run **Build upstream release** manually from the **Actions** tab if you do not want to wait for the scheduled check.
+
 1. Sign in to GitHub and fork this repository.
 2. Use **Sync fork** before each build so your fork contains the latest fixes.
 3. Open your fork, go to the **Actions** tab, and enable workflows if GitHub asks you to.

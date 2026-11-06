@@ -1,0 +1,90 @@
+name: Build upstream release
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: upstream-release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout upstream
+        uses: actions/checkout@v5
+        with:
+          repository: k1tbyte/Wand-Enhancer
+          ref: master
+          fetch-depth: 1
+
+      - name: Resolve upstream version
+        id: source
+        shell: pwsh
+        run: |
+          $sourceSha = (git rev-parse HEAD).Trim()
+          $shortSha = $sourceSha.Substring(0, 12)
+          $assemblyInfo = Get-Content 'WandEnhancer/Properties/AssemblyInfo.cs' -Raw
+          $match = [regex]::Match($assemblyInfo, 'AssemblyVersion\("(?<version>[^"]+)"\)')
+          if (-not $match.Success) {
+            throw 'AssemblyVersion was not found in the upstream source.'
+          }
+
+          $version = $match.Groups['version'].Value
+          "sha=$sourceSha" >> $env:GITHUB_OUTPUT
+          "short_sha=$shortSha" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=upstream-$version-$shortSha" >> $env:GITHUB_OUTPUT
+
+      - name: Skip already published commit
+        id: release
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ steps.source.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/$env:GITHUB_REPOSITORY/releases/tags/$env:RELEASE_TAG" *> $null
+          if ($LASTEXITCODE -eq 0) {
+            "exists=true" >> $env:GITHUB_OUTPUT
+            Write-Host "Release $env:RELEASE_TAG already exists."
+          } else {
+            "exists=false" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Set up pnpm
+        if: steps.release.outputs.exists != 'true'
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10.17.0
+
+      - name: Set up Node.js
+        if: steps.release.outputs.exists != 'true'
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web-panel/pnpm-lock.yaml
+
+      - name: Build executable
+        if: steps.release.outputs.exists != 'true'
+        shell: pwsh
+        run: ./build.ps1 -Configuration Release
+
+      - name: Publish release
+        if: steps.release.outputs.exists != 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.source.outputs.tag }}
+          name: WandEnhancer ${{ steps.source.outputs.version }} (${{ steps.source.outputs.short_sha }})
+          body: |
+            Automated build from upstream commit [${{ steps.source.outputs.sha }}](https://github.com/k1tbyte/Wand-Enhancer/commit/${{ steps.source.outputs.sha }}).
+
+            This executable was built by GitHub Actions from the upstream source.
+          files: WandEnhancer/bin/Release/WandEnhancer.exe
+          fail_on_unmatched_files: true
+          make_latest: true
