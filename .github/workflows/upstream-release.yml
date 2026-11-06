@@ -40,6 +40,8 @@ jobs:
       - name: Resolve upstream version
         id: source
         shell: pwsh
+        env:
+          MANUAL_TAG_SUFFIX: ${{ github.event_name == 'workflow_dispatch' && format('-manual-{0}', github.run_number) || '' }}
         run: |
           $sourceSha = (git rev-parse HEAD).Trim()
           $shortSha = $sourceSha.Substring(0, 12)
@@ -56,7 +58,7 @@ jobs:
           "sha=$sourceSha" >> $env:GITHUB_OUTPUT
           "short_sha=$shortSha" >> $env:GITHUB_OUTPUT
           "version=$version" >> $env:GITHUB_OUTPUT
-          "tag=upstream-$version-$shortSha" >> $env:GITHUB_OUTPUT
+          "tag=upstream-$version-$shortSha$env:MANUAL_TAG_SUFFIX" >> $env:GITHUB_OUTPUT
 
       - name: Skip already published commit
         id: release
