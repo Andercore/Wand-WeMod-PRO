@@ -51,8 +51,11 @@ jobs:
           RELEASE_TAG: ${{ steps.source.outputs.tag }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          $ErrorActionPreference = 'Continue'
           gh api "repos/$env:GITHUB_REPOSITORY/releases/tags/$env:RELEASE_TAG" *> $null
-          if ($LASTEXITCODE -eq 0) {
+          $releaseExists = $LASTEXITCODE -eq 0
+          $ErrorActionPreference = 'Stop'
+          if ($releaseExists) {
             "exists=true" >> $env:GITHUB_OUTPUT
             Write-Host "Release $env:RELEASE_TAG already exists."
           } else {
