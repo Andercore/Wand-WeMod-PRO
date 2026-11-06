@@ -95,3 +95,61 @@ jobs:
           files: WandEnhancer/bin/Release/WandEnhancer.exe
           fail_on_unmatched_files: true
           make_latest: true
+
+  cleanup:
+    if: always()
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+
+    steps:
+      - name: Remove old automated releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          releases="$(gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/releases?per_page=100" \
+            --jq '.[] | select(.tag_name | startswith("upstream-")) | [.created_at, .id, .tag_name] | @tsv' \
+            | sort -r)"
+
+          keep=0
+          while IFS=$'\t' read -r created_at release_id tag_name; do
+            [ -n "${release_id:-}" ] || continue
+            keep=$((keep + 1))
+            if [ "$keep" -le 1 ]; then
+              continue
+            fi
+
+            echo "Deleting old automated release: ${tag_name}"
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/${release_id}"
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/git/refs/tags/${tag_name}" || true
+          done <<< "$releases"
+
+      - name: Remove old workflow runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          runs="$(gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/upstream-release.yml/runs?per_page=100" \
+            --jq '.workflow_runs[] | [.created_at, .id] | @tsv' \
+            | sort -r)"
+
+          keep=0
+          while IFS=$'\t' read -r created_at run_id; do
+            [ -n "${run_id:-}" ] || continue
+            keep=$((keep + 1))
+            if [ "$keep" -le 3 ] || [ "$run_id" = "$GITHUB_RUN_ID" ]; then
+              continue
+            fi
+
+            echo "Deleting old workflow run: ${run_id}"
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}"
+          done <<< "$runs"
