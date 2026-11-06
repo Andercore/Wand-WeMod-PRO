@@ -23,20 +23,6 @@ jobs:
           ref: master
           fetch-depth: 1
 
-      - name: Apply fork branding
-        uses: actions/checkout@v5
-        with:
-          repository: ${{ github.repository }}
-          ref: master
-          path: .fork-branding
-          sparse-checkout: |
-            assets/appicon.ico
-          fetch-depth: 1
-
-      - name: Use fork application icon
-        shell: pwsh
-        run: Copy-Item '.fork-branding/assets/appicon.ico' 'assets/appicon.ico' -Force
-
       - name: Resolve upstream version
         id: source
         shell: pwsh
