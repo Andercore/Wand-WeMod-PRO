@@ -30,7 +30,10 @@ jobs:
           $sourceSha = (git rev-parse HEAD).Trim()
           $shortSha = $sourceSha.Substring(0, 12)
           $assemblyInfo = Get-Content 'WandEnhancer/Properties/AssemblyInfo.cs' -Raw
-          $match = [regex]::Match($assemblyInfo, 'AssemblyVersion\("(?<version>[^"]+)"\)')
+          $match = [regex]::Match(
+            $assemblyInfo,
+            '(?m)^\s*\[assembly:\s*AssemblyVersion\("(?<version>[^"]+)"\)\]'
+          )
           if (-not $match.Success) {
             throw 'AssemblyVersion was not found in the upstream source.'
           }
