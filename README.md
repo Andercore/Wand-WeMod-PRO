@@ -1,174 +1,194 @@
 <div align="center">
 
-![logo](./assets/icon.svg)
+![WandEnhancer logo](./assets/icon.svg)
 
 # WandEnhancer
 
-[![GitLab Mirror](https://img.shields.io/badge/GitLab-mirror-fc6d26?logo=gitlab)](https://gitlab.com/kitbyte/wand-enhancer)
+Open-source client-side enhancements for Wand.
+
+[![Build executable](https://github.com/Andercore/Wand-WeMod-PRO/actions/workflows/upstream-release.yml/badge.svg)](https://github.com/Andercore/Wand-WeMod-PRO/actions/workflows/upstream-release.yml)
+[![Latest release](https://img.shields.io/github/v/release/Andercore/Wand-WeMod-PRO?display_name=tag)](https://github.com/Andercore/Wand-WeMod-PRO/releases/latest)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.md)
 
 </div>
 
-<h4>An open-source interoperability tool designed to extend local client-side configurations and improve the UX of the Wand application.</h4>
+WandEnhancer is a Windows desktop patcher that applies local, reversible enhancements to an installed Wand client. It also includes an optional web panel for controlling a running trainer from another device on the same trusted network.
 
-**🚨 IMPORTANT NOTICE: THIS PROJECT HAS NO OFFICIAL YOUTUBE TUTORIALS, GUIDES, OR PREBUILT EXECUTABLE DOWNLOADS. 🚨
-There are no official videos showing how to install or use this tool. Scammers are creating fake tutorials using this project's name and placing malware/password stealers in the video descriptions. Official GitHub releases contain release notes only, not `.exe` files. If you downloaded an `.exe` or archive from a YouTube link, a random website, or a third-party mirror, you did not get it from this project. We are not responsible for third-party downloads.**
+> **This is an unofficial third-party project.** Wand and WeMod are trademarks of their respective owners. WandEnhancer does not distribute Wand, does not include proprietary Wand files, and does not provide an account or server-side bypass.
 
-## 👾 What does it access?
+## Download and installation
 
-The default .NET patcher modifies files in the selected local Wand installation and contains no update-checking or telemetry network code. Wand itself remains an online application, build tools restore declared dependencies, and the optional Remote Web Panel deliberately starts a LAN HTTP/WebSocket server and uses Wand API/CDN data. An explicit build-time option can include GitHub release notifications; that variant sends a GitHub API request with your IP and a User-Agent when Wand starts, but sends no Wand or account data and never downloads updates. Review the source and build the executable from your own fork; unsigned patching tools can trigger generic antivirus heuristics.
+No compilation is required for normal use. The latest executable is published automatically in this repository:
 
-## 💫 What features are improved?
+**[Download the latest WandEnhancer release](https://github.com/Andercore/Wand-WeMod-PRO/releases/latest)**
 
-✅ Local environment configuration management <br/>
-✅ Automated compatibility adjustments for new client versions <br/>
-✅ Advanced layout and theme customization (Client-side only) <br/>
-✅ AI Features <br/>
-✅ Remote web panel (Remote Connect on mobile) <br/>
+The release is built on a Windows GitHub Actions runner from the latest commit in the upstream repository [`k1tbyte/Wand-Enhancer`](https://github.com/k1tbyte/Wand-Enhancer). The automation checks upstream every 15 minutes, publishes a new release when the commit changes, and removes older automated releases.
 
-## 🌐 Remote Web Panel
-WandEnhancer includes a built-in **Remote Web Panel** allowing you to control app features directly from your phone.
+### Install in three steps
 
-### Quick Start:
-1. Ensure both your PC and phone are on the **same Wi-Fi network**.
-2. Hover over the **Connect** button in the top bar of WandEnhancer.
-3. Scan the displayed **QR code** with your phone's camera.
+1. Open the [latest release](https://github.com/Andercore/Wand-WeMod-PRO/releases/latest).
+2. Under **Assets**, download `WandEnhancer.exe`.
+3. Run the downloaded file and follow the patcher's instructions.
 
-### Troubleshooting & Remote Access:
-- **Page isn't loading?** First, ensure both your PC and phone are connected to the **same local network**. Some routers and guest Wi-Fi networks enable client isolation/AP isolation, which blocks devices on the same SSID from reaching each other. If it still does not load, check Windows Firewall and allow inbound traffic on TCP port `3223` for your local network. If Windows marked your connection as **Public**, switching it to **Private** can also help.
-- **Using mobile data or a different network?** If you want to use the panel over mobile data (LTE/5G) or from an entirely different network, you can use [Tailscale](https://tailscale.com/) or similar VPN tools.
-- The panel uses plain HTTP on port `3223` and has no pairing code. Anyone who can reach that port can view the panel and control the active trainer, so use it only on a trusted LAN/VPN and never expose the port directly to the internet.
-- The panel protocol does not include your Wand bearer token or installation-path fields.
+Keep the executable in a folder where you can write files. The patcher will detect the installed Wand client; select the patches you want and choose **Patch**. Close Wand first if the patcher asks you to.
 
-## 👀 How to use?
+The executable is unsigned. Windows SmartScreen or antivirus software may show a warning for an unsigned, uncommon application. Only use a binary downloaded from a source you trust, and verify the source code and workflow before running it.
 
-This repository does not publish official compiled binaries. Build your own executable from your own fork using GitHub Actions.
+## What it can do
 
-The fork also includes an automatic upstream build: every 15 minutes it checks `k1tbyte/Wand-Enhancer`, builds a new upstream commit on Windows, and publishes `WandEnhancer.exe` in a GitHub Release. Run **Build upstream release** manually from the **Actions** tab if you do not want to wait for the scheduled check.
+- Apply structural compatibility patches to a local Wand installation.
+- Enable or disable optional client-side features.
+- Choose between supported static and supervised patch strategies.
+- Re-apply a saved patch configuration after Wand updates.
+- Inject trusted custom renderer scripts.
+- Provide a LAN web panel for trainer status and controls.
+- Restore the original installation files from backups.
+- Open developer tools with `F12` when that patch is enabled.
 
-1. Sign in to GitHub and fork this repository.
-2. Use **Sync fork** before each build so your fork contains the latest fixes.
-3. Open your fork, go to the **Actions** tab, and enable workflows if GitHub asks you to.
-4. Select the **Build executable** workflow.
-5. Click **Run workflow** and start the run. Leave **Include GitHub release checks when Wand starts** off for a fully offline patcher, or enable it to compile in new-version notifications.
-6. Wait for the workflow to finish, open the completed run, and download the artifact.
-7. Extract the artifact zip and run `WandEnhancer.exe` to apply local client modifications.
+Available patch types and behavior can change as Wand evolves. The patcher reports unsupported or failed patch locations instead of silently claiming success.
 
-### Testing a release candidate
+## See it in action
 
-- `master` is the stable source. Select a `feature/rc_*` branch in your fork's **Run workflow** branch selector only when the maintainer explicitly asks for candidate testing. Ensure that branch contains the upstream commit you intend to test; syncing `master` does not update a separate RC branch.
-- You do **not** need to open a pull request to this repository to build your fork.
-- Record the workflow's source commit SHA, not just `2.0.0.0`: the RC tag, RC branch and a local build may contain different fixes.
-- For startup failures, attach `launcher.log` and, if relevant, `launcher.prev.log` from the Wand installation root. They include the build commit and applied patches. Remove personal paths or other private information before sharing.
-- Include the exact Wand version and stable/beta channel, selected patches, and whether the failure happened on a fresh install, an update, or Restore. Do not attach executables, account tokens or storage dumps.
+The following screenshots and video show the patcher interface and the Remote Web Panel:
 
-*Here how you do it:*
+<div align="center">
 
-https://github.com/user-attachments/assets/7966cabe-0aa6-424d-8c2f-981ad91e0f91
+![WandEnhancer main window](./assets/screenshots/app1.png)
 
+![WandEnhancer patch controls](./assets/screenshots/app2.png)
 
+</div>
 
-## 🧩 Custom scripts
+<video src="./assets/usage-guide.mp4" controls width="720"></video>
 
-You can inject your own JavaScript into Wand at patch time to tweak or fix things in the client UI. This reuses the same renderer injection the Remote Web Panel uses, so it requires the **Remote Web Panel** patch to be enabled.
+## Remote web panel
 
-**How to add a script**
+The Remote Web Panel lets you view trainer state and control the active trainer from a phone or another computer.
 
-- In the patch dialog, add one or more `.js` files (only existing `.js` files are accepted), **or**
-- Drop `.js` files into a `renderer-scripts/` folder placed next to the patcher executable.
+1. Enable **Remote Web Panel** in the patch dialog.
+2. Apply the patch and start Wand.
+3. Open the **Connect** control in WandEnhancer.
+4. Scan the QR code with a device on the same trusted LAN.
 
-Then patch as usual — your scripts are bundled into the client and run inside Wand's window.
+The panel uses HTTP and WebSocket traffic on local port `3223`.
 
-**How it runs**
+**Security notes**
 
-- Each script runs inside Wand's renderer (full DOM access, plus Node `require`).
-- It is wrapped so a thrown error is logged and never crashes Wand.
-- It may run **more than once** per launch (on load and again shortly after), so guard one‑time work behind a global flag.
-- A small `WandEnhancer` helper is available: `WandEnhancer.log(...)`, `WandEnhancer.remoteUrl`, `WandEnhancer.apiVersion`.
+- There is no pairing code or authentication layer.
+- Anyone who can reach the port can view the panel and send supported controls.
+- Use it only on a trusted LAN or VPN.
+- Do not expose port `3223` directly to the internet.
+- Windows Firewall may need an inbound rule for TCP port `3223` on your private network.
+- The panel does not expose the Wand bearer token or installation path through its protocol.
 
-**Minimal example** (`hello.js`)
+For remote access across different networks, use a private VPN such as [Tailscale](https://tailscale.com/) rather than port forwarding.
+
+## Custom renderer scripts
+
+Custom JavaScript files can be injected into Wand when the Remote Web Panel patch is enabled.
+
+- Add existing `.js` files in the patch dialog, or
+- Place `.js` files in a `renderer-scripts/` directory next to `WandEnhancer.exe`.
+
+Scripts run inside Wand's renderer with the same privileges as the client. Only use scripts you have reviewed and trust. A script may run more than once during startup, so one-time initialization should be guarded:
 
 ```js
-// Injected scripts can run multiple times — guard one-time setup.
-if (!globalThis.__helloScriptInstalled) {
-  globalThis.__helloScriptInstalled = true;
-
-  WandEnhancer.log("Hello from my custom script!", WandEnhancer.remoteUrl);
-
-  new MutationObserver(() => {
-    const dialog = document.querySelector("ux-dialog:not([data-seen])");
-    if (dialog) {
-      dialog.setAttribute("data-seen", "1");
-      WandEnhancer.log("A dialog opened.");
-    }
-  }).observe(document.documentElement, { childList: true, subtree: true });
+if (!globalThis.__myScriptInstalled) {
+  globalThis.__myScriptInstalled = true;
+  WandEnhancer.log("Custom script loaded");
 }
 ```
 
-> Scripts run with the same privileges as the Wand client. Only add scripts you trust and understand.
+The injected environment provides:
 
-## 🛠️ How to build from source
+```js
+WandEnhancer.log(message);
+WandEnhancer.remoteUrl;
+WandEnhancer.apiVersion;
+```
 
-Building from source on Windows requires a local development environment.
+## Data and network behavior
 
-### Requirements
+The default patcher works on the selected local installation and does not send telemetry.
 
-- `Node.js` and `pnpm`
-- `Visual Studio 2022` or `Build Tools for Visual Studio 2022` with `MSBuild`
-- .NET Framework 4.8 desktop build tools / targeting pack
+Network activity depends on the selected features:
 
-### Build steps
+- The optional Remote Web Panel listens on the local network and may use Wand's existing API/CDN paths for trainer and artwork data.
+- Builds compiled with update notifications may query the public GitHub Releases API when WandEnhancer starts.
+- The updater only shows release information. It does not download or install updates.
 
-1. Clone this repository.
-2. Install the requirements above and make sure `pnpm` and `MSBuild` are available.
-3. Run `build.cmd` from Command Prompt or PowerShell.
+The automatic release workflow builds the executable in GitHub Actions. It does not run on the user's computer.
 
-The build script installs dependencies, lints and type-checks the panel, builds production assets, runs web tests, builds WPF, and checks desktop patch state and structural JavaScript patches. Tests use temporary fixtures, not your Wand installation.
+## Build from source
 
-Update notifications are excluded by default. To compile them in locally, run `build.cmd -EnableUpdateNotifications`. When compiled in, the check runs on Wand's launch (on by default, toggle in Settings), shows a native Windows notification for a newer release, and opens the release notes when clicked (the release page when only the launcher is running). It never downloads or installs an update.
+Building from source is only needed for contributors, testing or custom builds. Normal users should use the executable from [Releases](https://github.com/Andercore/Wand-WeMod-PRO/releases/latest).
 
----
+Builds require Windows and the following tools:
 
-## ❓ Q&A
+- Visual Studio 2022 or Visual Studio Build Tools with MSBuild.
+- .NET Framework 4.8 Developer/Targeting Pack.
+- Node.js 22.
+- pnpm 10.
 
-- **Why is there no `.exe` in GitHub Releases?**
-  - Official releases are notes-only on purpose. The project no longer distributes prebuilt executables because unsigned or self-built patching tools are repeatedly reuploaded, mislabeled, and flagged by third-party scanners. Build the executable from your own fork using GitHub Actions instead.
-- **Where do I download the executable?**
-  - From your own fork's **Actions** artifact after running the **Build executable** workflow. Do not download `.exe` files from YouTube descriptions, random mirrors, Discord attachments, or issue comments.
-- **Why does Windows Defender or SmartScreen warn about my build?**
-  - The GitHub Actions artifact is unsigned and uncommon, so Windows may warn even when the code was built directly from your fork. Review the source, verify the workflow logs, and only run binaries you built yourself.
-- **Can I use a binary built by someone else?**
-  - You can, but you should treat it as untrusted. This repository cannot verify or support third-party builds.
-- **Does this send data anywhere?**
-  - The default .NET patcher is fully offline. The optional Remote Web Panel listens on your LAN and may request trainer translations/artwork through Wand's existing API/CDN paths. If you explicitly compile in update notifications, each Wand launch checks GitHub's public releases API and exposes only the normal request metadata, including your IP and User-Agent. There is no telemetry, download, or automatic update.
-- **How do I learn about a new version without an in-app update check?**
-  - On GitHub choose **Watch → Custom → Releases**, then sync your fork and run **Build executable** when a release is published. You can also opt into compile-time release notifications in the manual workflow.
+From PowerShell:
 
----
-## 🖼️ Screenshots
-![1](./assets/screenshots/app1.png)
-<div align='center'>
+```powershell
+git clone https://github.com/Andercore/Wand-WeMod-PRO.git
+cd Wand-WeMod-PRO
+.\build.ps1 -Configuration Release
+```
 
-![2](./assets/screenshots/app2.png)
-</div>
+The build script installs the web-panel dependencies, runs linting and tests, builds the production panel and bridge, compiles the WPF application, and runs desktop patch and compatibility checks. The executable is written to:
 
+```text
+WandEnhancer/bin/Release/WandEnhancer.exe
+```
 
-## 📜 License
-This project is licensed under the Apache-2.0 - see the [LICENSE](LICENSE.md) file for details.
+To include the optional compile-time update notification code:
 
+```powershell
+.\build.ps1 -Configuration Release -EnableUpdateNotifications
+```
 
-## ❤️ Support
+The normal build intentionally excludes that code.
 
-If you find this project useful, you can support its development using any of the options below 🙌
+## Project layout
 
-[![Patreon](https://img.shields.io/badge/Patreon-donate-f96854.svg?logo=patreon)](https://www.patreon.com/kitbyte/gift)
-[![USDT TRC20](https://img.shields.io/badge/USDT--TRC20-donate-26a17b.svg?logo=tether)](https://tronscan.org/#/address/TQdvau8pAy5Tg1Aa588tTcPCFgbcHtuoxc)
-[![BTC](https://img.shields.io/badge/BTC-donate-f7931a.svg?logo=bitcoin)](https://www.blockchain.com/explorer/addresses/btc/1EZKDcyU8REm9JW5xwXJqSpn5Xaq5yAWWX)
-[![ETH](https://img.shields.io/badge/ETH-donate-3c3c3d.svg?logo=ethereum)](https://etherscan.io/address/0xd904d9d0557f88bbb1c4ab3582b4ca0d8a730e8d)
+| Path | Purpose |
+| --- | --- |
+| `WandEnhancer/` | Desktop application, patch engine and user interface |
+| `AsarSharp/` | ASAR archive reader and writer |
+| `web-panel/` | Remote web panel and Electron bridge |
+| `WandEnhancer/Patches/` | Embedded JavaScript patch payloads |
+| `scripts/` | Build, test and release validation scripts |
+| `.github/workflows/` | CI, validation and automated upstream release workflows |
 
+## Contributing
 
----
+Bug reports and pull requests are welcome. When reporting a problem, include:
 
-> **Legal Disclaimer:**
-> This project is a third-party enhancement tool intended solely for educational, research, and local interoperability purposes. It does not distribute any proprietary code or bypass server-side validations. All modifications are performed locally to customize the user's interface.
+- WandEnhancer version and source release.
+- Wand version and release channel.
+- Enabled patch types and strategy.
+- Steps to reproduce the problem.
+- Relevant `launcher.log` output with private paths removed.
 
----
+Do not upload account tokens, storage dumps, proprietary Wand bundles, or personal installation data.
+
+Before submitting a change, run the relevant checks. The complete desktop build is:
+
+```powershell
+.\build.ps1 -Configuration Release
+```
+
+Do not commit extracted Wand `.source` or `.sources` directories.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the development and review process.
+
+## Disclaimer
+
+WandEnhancer is provided for local interoperability, customization and research purposes. Use it at your own risk. Always keep backups and use the built-in restore option before removing or replacing a patched installation.
+
+## License
+
+This project is licensed under the [Apache License 2.0](LICENSE.md).
