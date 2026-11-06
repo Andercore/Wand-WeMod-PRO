@@ -1,6 +1,6 @@
 <div align="center">
 
-![WandEnhancer logo](./assets/wemod-icon.png)
+<img src="./assets/wemod-icon.png" alt="WandEnhancer logo" width="170">
 
 # WandEnhancer
 
