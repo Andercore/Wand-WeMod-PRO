@@ -16,10 +16,10 @@ namespace WandEnhancer.Core
     internal static class UpdateNotifier
     {
         private const string LatestReleaseApiUrl =
-            "https://api.github.com/repos/k1tbyte/Wand-Enhancer/releases/latest";
+            "https://api.github.com/repos/Andercore/Wand-WeMod-PRO/releases/latest";
 
         private const string ReleasesApiUrl =
-            "https://api.github.com/repos/k1tbyte/Wand-Enhancer/releases?per_page=20";
+            "https://api.github.com/repos/Andercore/Wand-WeMod-PRO/releases?per_page=20";
 
         // Local testing hook: pretend this tag is the latest public release.
         private const string TestUpdateEnvVar = "WAND_ENHANCER_TEST_UPDATE";
