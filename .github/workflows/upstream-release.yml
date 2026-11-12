@@ -48,6 +48,12 @@ jobs:
           "version=$version" >> $env:GITHUB_OUTPUT
           "tag=upstream-$version-$shortSha$env:MANUAL_TAG_SUFFIX" >> $env:GITHUB_OUTPUT
 
+      - name: Checkout fork source
+        uses: actions/checkout@v5
+        with:
+          ref: master
+          fetch-depth: 1
+
       - name: Remove stale upstream documentation reference
         shell: pwsh
         run: |
@@ -57,6 +63,24 @@ jobs:
             $content = $content.Replace('`Core/EnhancerConfig.cs`, ', '')
             Set-Content -Path $path -Value $content -NoNewline
           }
+
+      - name: Align fork version with upstream release
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.source.outputs.version }}
+        run: |
+          $path = 'WandEnhancer/Properties/AssemblyInfo.cs'
+          $content = Get-Content $path -Raw
+          $updated = [regex]::Replace(
+            $content,
+            '(?m)^(\s*\[assembly:\s*AssemblyVersion\(")[^"]+("\)\])',
+            '${1}' + $env:RELEASE_VERSION + '${2}',
+            1
+          )
+          if ($updated -eq $content) {
+            throw 'AssemblyVersion was not found in the fork source.'
+          }
+          Set-Content -Path $path -Value $updated -NoNewline
 
       - name: Skip already published commit
         id: release
