@@ -46,6 +46,16 @@ jobs:
           "version=$version" >> $env:GITHUB_OUTPUT
           "tag=upstream-$version-$shortSha$env:MANUAL_TAG_SUFFIX" >> $env:GITHUB_OUTPUT
 
+      - name: Remove stale upstream documentation reference
+        shell: pwsh
+        run: |
+          if ((Test-Path 'CLAUDE.md') -and -not (Test-Path 'WandEnhancer/Core/EnhancerConfig.cs')) {
+            $path = 'CLAUDE.md'
+            $content = Get-Content $path -Raw
+            $content = $content.Replace(', `Core/EnhancerConfig.cs`', '')
+            Set-Content -Path $path -Value $content -NoNewline
+          }
+
       - name: Skip already published commit
         id: release
         shell: pwsh
@@ -82,7 +92,7 @@ jobs:
       - name: Build executable
         if: steps.release.outputs.exists != 'true'
         shell: pwsh
-        run: ./build.ps1 -Configuration Release
+        run: ./build.ps1 -Configuration Release -EnableUpdateNotifications
 
       - name: Publish release
         if: steps.release.outputs.exists != 'true'
