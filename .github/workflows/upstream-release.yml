@@ -80,7 +80,16 @@ jobs:
           if ($updated -eq $content) {
             throw 'AssemblyVersion was not found in the fork source.'
           }
-          Set-Content -Path $path -Value $updated -NoNewline
+          $fileVersionUpdated = [regex]::Replace(
+            $updated,
+            '(?m)^(\s*\[assembly:\s*AssemblyFileVersion\(")[^"]+("\)\])',
+            '${1}' + $env:RELEASE_VERSION + '${2}',
+            1
+          )
+          if ($fileVersionUpdated -eq $updated) {
+            throw 'AssemblyFileVersion was not found in the fork source.'
+          }
+          Set-Content -Path $path -Value $fileVersionUpdated -NoNewline
 
       - name: Resolve fork build tag
         id: build
