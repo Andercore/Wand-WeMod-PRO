@@ -82,11 +82,25 @@ jobs:
           }
           Set-Content -Path $path -Value $updated -NoNewline
 
+      - name: Resolve fork build tag
+        id: build
+        shell: pwsh
+        env:
+          UPSTREAM_VERSION: ${{ steps.source.outputs.version }}
+          UPSTREAM_SHORT_SHA: ${{ steps.source.outputs.short_sha }}
+          MANUAL_TAG_SUFFIX: ${{ github.event_name == 'workflow_dispatch' && format('-manual-{0}', github.run_number) || '' }}
+        run: |
+          $forkSha = (git rev-parse HEAD).Trim()
+          $forkShortSha = $forkSha.Substring(0, 12)
+          "fork_sha=$forkSha" >> $env:GITHUB_OUTPUT
+          "fork_short_sha=$forkShortSha" >> $env:GITHUB_OUTPUT
+          "tag=upstream-$env:UPSTREAM_VERSION-$env:UPSTREAM_SHORT_SHA-fork-$forkShortSha$env:MANUAL_TAG_SUFFIX" >> $env:GITHUB_OUTPUT
+
       - name: Skip already published commit
         id: release
         shell: pwsh
         env:
-          RELEASE_TAG: ${{ steps.source.outputs.tag }}
+          RELEASE_TAG: ${{ steps.build.outputs.tag }}
           GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = 'Continue'
@@ -124,8 +138,8 @@ jobs:
         if: steps.release.outputs.exists != 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.source.outputs.tag }}
-          name: WandEnhancer ${{ steps.source.outputs.version }} (${{ steps.source.outputs.short_sha }})
+          tag_name: ${{ steps.build.outputs.tag }}
+          name: WandEnhancer ${{ steps.source.outputs.version }} (${{ steps.source.outputs.short_sha }}, fork ${{ steps.build.outputs.fork_short_sha }})
           body: |
             Automated build from upstream commit [${{ steps.source.outputs.sha }}](https://github.com/k1tbyte/Wand-Enhancer/commit/${{ steps.source.outputs.sha }}).
 
