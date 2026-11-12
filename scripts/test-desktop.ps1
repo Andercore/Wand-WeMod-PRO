@@ -35,8 +35,10 @@ if ($ExpectUpdateNotifications) {
     $newer = [Version]::new($current.Major, $current.Minor, $current.Build, $current.Revision + 1)
     Assert-Equal ($isNewerVersion.Invoke($null, @($newer.ToString()))) $true 'Newer release detection'
     Assert-Equal ($isNewerVersion.Invoke($null, @("v$current"))) $false 'Current release detection'
-    Assert-Equal ($isNewerVersion.Invoke($null, @('upstream-2.2.2.0-c70871ebcccc-fork-abc123'))) $true 'Automated release tag detection'
-    Assert-Equal ($isNewerVersion.Invoke($null, @('upstream-2.2.1.0-c70871ebcccc-fork-abc123'))) $false 'Current automated release tag detection'
+    $automatedTag = "upstream-$newer-c70871ebcccc-fork-abc123"
+    $currentAutomatedTag = "upstream-$current-c70871ebcccc-fork-abc123"
+    Assert-Equal ($isNewerVersion.Invoke($null, @($automatedTag))) $true 'Automated release tag detection'
+    Assert-Equal ($isNewerVersion.Invoke($null, @($currentAutomatedTag))) $false 'Current automated release tag detection'
     Assert-Equal ($isNewerVersion.Invoke($null, @('invalid'))) $false 'Invalid release detection'
 
     $buildNotificationText = $updateNotifier.GetMethod('BuildNotificationText', $privateStatic)
