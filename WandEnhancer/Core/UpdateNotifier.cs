@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -125,7 +126,7 @@ namespace WandEnhancer.Core
 
                 var update = new UpdateRelease
                 {
-                    Version = release.TagName.Trim().TrimStart('v', 'V'),
+                    Version = latestVersion.ToString(),
                     Notes = release.Body,
                     Url = Constants.RepositoryUrl + "/releases/tag/" + Uri.EscapeDataString(release.TagName)
                 };
@@ -198,12 +199,11 @@ namespace WandEnhancer.Core
             if (string.IsNullOrWhiteSpace(tagName))
                 return false;
 
-            string normalized = tagName.Trim().TrimStart('v', 'V');
-            int suffix = normalized.IndexOf('-');
-            if (suffix >= 0)
-                normalized = normalized.Substring(0, suffix);
+            Match match = Regex.Match(tagName.Trim(), @"(?<!\d)\d+(?:\.\d+){1,3}");
+            if (!match.Success)
+                return false;
 
-            return Version.TryParse(normalized, out version);
+            return Version.TryParse(match.Value, out version);
         }
 
         private static void ShowNotification(UpdateRelease update, Action<UpdateRelease> onNotificationClick)
