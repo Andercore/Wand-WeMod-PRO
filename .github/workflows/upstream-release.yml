@@ -3,6 +3,8 @@ name: Build upstream release
 on:
   schedule:
     - cron: '*/15 * * * *'
+  push:
+    branches: [master]
   workflow_dispatch:
 
 concurrency:
