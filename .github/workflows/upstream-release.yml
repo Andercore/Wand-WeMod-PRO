@@ -54,7 +54,7 @@ jobs:
           if ((Test-Path 'CLAUDE.md') -and -not (Test-Path 'WandEnhancer/Core/EnhancerConfig.cs')) {
             $path = 'CLAUDE.md'
             $content = Get-Content $path -Raw
-            $content = $content.Replace(', `Core/EnhancerConfig.cs`', '')
+            $content = $content.Replace('`Core/EnhancerConfig.cs`, ', '')
             Set-Content -Path $path -Value $content -NoNewline
           }
 
