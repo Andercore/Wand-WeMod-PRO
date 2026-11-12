@@ -121,7 +121,9 @@ namespace WandEnhancer.Core
                 if (!string.IsNullOrWhiteSpace(testTag))
                     release.TagName = testTag;
 
-                if (!IsNewerVersion(release.TagName))
+                Version latestVersion;
+                if (!TryParseVersion(release.TagName, out latestVersion) ||
+                    latestVersion.CompareTo(Constants.Version) <= 0)
                     return;
 
                 var update = new UpdateRelease
